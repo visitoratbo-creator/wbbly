@@ -41,17 +41,14 @@ class _GameShellState extends State<GameShell> {
 
   Future<void> _buildScene() async {
     // Ground plane.
-    // FIX 1: PlaneGeometry named params.
-    // FIX 3: Node position supplied via localTransform translation matrix.
     _scene.add(Node(
-      mesh: Mesh(PlaneGeometry(width: 200, height: 200), PhysicallyBasedMaterial()),
+      mesh: Mesh(PlaneGeometry(width: 200, depth: 200), PhysicallyBasedMaterial()),
       localTransform: vm.Matrix4.translationValues(0, 0, 0),
     ));
 
     // Player capsule placeholder until GLB pipeline output is present.
-    // FIX 1 + FIX 3 applied here as well.
     _selfNode = Node(
-      mesh: Mesh(CapsuleGeometry(radius: 0.4, length: 1.2), PhysicallyBasedMaterial()),
+      mesh: Mesh(CapsuleGeometry(radius: 0.4, height: 1.2), PhysicallyBasedMaterial()),
       localTransform: vm.Matrix4.translationValues(0, 1, 0),
     );
     _scene.add(_selfNode!);
@@ -116,7 +113,7 @@ class _GameShellState extends State<GameShell> {
       final node = _remotePlayers.putIfAbsent(
         id,
         () => Node(
-            mesh: Mesh(CapsuleGeometry(radius: 0.4, length: 1.2),
+            mesh: Mesh(CapsuleGeometry(radius: 0.4, height: 1.2),
                 PhysicallyBasedMaterial())),
       );
       // Runtime setter is valid — only the *constructor* lacks `position:`.
