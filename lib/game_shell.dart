@@ -41,15 +41,18 @@ class _GameShellState extends State<GameShell> {
 
   Future<void> _buildScene() async {
     // Ground plane.
+    // FIX 1: PlaneGeometry named params.
+    // FIX 3: Node position supplied via localTransform translation matrix.
     _scene.add(Node(
-      mesh: Mesh(PlaneGeometry(200, 200), PhysicallyBasedMaterial()),
-      position: const vm.Vector3(0, 0, 0),
+      mesh: Mesh(PlaneGeometry(width: 200, height: 200), PhysicallyBasedMaterial()),
+      localTransform: vm.Matrix4.translationValues(0, 0, 0),
     ));
 
     // Player capsule placeholder until GLB pipeline output is present.
+    // FIX 1 + FIX 3 applied here as well.
     _selfNode = Node(
-      mesh: Mesh(CapsuleGeometry(0.4, 1.2), PhysicallyBasedMaterial()),
-      position: const vm.Vector3(0, 1, 0),
+      mesh: Mesh(CapsuleGeometry(radius: 0.4, length: 1.2), PhysicallyBasedMaterial()),
+      localTransform: vm.Matrix4.translationValues(0, 1, 0),
     );
     _scene.add(_selfNode!);
 
@@ -62,7 +65,8 @@ class _GameShellState extends State<GameShell> {
       // Missing asset is non-fatal; primitives above carry the demo.
     }
 
-    _camera = PerspectiveCamera(position: const vm.Vector3(0, 6, -10));
+    // FIX 2: Vector3 constructors are non-const factory methods — no `const`.
+    _camera = PerspectiveCamera(position: vm.Vector3(0, 6, -10));
     if (mounted) setState(() => _sceneReady = true);
   }
 
@@ -108,10 +112,14 @@ class _GameShellState extends State<GameShell> {
         (p['y'] as num).toDouble(),
         (p['z'] as num).toDouble(),
       );
+      // FIX 1: CapsuleGeometry named params (remote-player placeholder).
       final node = _remotePlayers.putIfAbsent(
         id,
-        () => Node(mesh: Mesh(CapsuleGeometry(0.4, 1.2), PhysicallyBasedMaterial())),
+        () => Node(
+            mesh: Mesh(CapsuleGeometry(radius: 0.4, length: 1.2),
+                PhysicallyBasedMaterial())),
       );
+      // Runtime setter is valid — only the *constructor* lacks `position:`.
       node.position = pos; // interpolated client-side between ticks
     }
     if (mounted) setState(() {});
