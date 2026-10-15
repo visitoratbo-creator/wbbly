@@ -21,7 +21,9 @@ class GameSocket {
         })
         .where((d) => d is Map<String, dynamic>)
         .cast<Map<String, dynamic>>()
-        .listen(_inbound.add, onDone: _onDone.add);
+        // FIX 4: onDone requires a zero-argument `void Function()`.
+        // StreamController<void>.add still needs one argument, so pass null.
+        .listen(_inbound.add, onDone: () => _onDone.add(null));
   }
 
   static Future<GameSocket> connect({
