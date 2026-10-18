@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#triggered.
 sed -i 's/\r$//' "$0" || true
 # =========================================================
 # 1. FIXED PARSING VARIABLES
